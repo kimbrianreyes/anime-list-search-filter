@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anime Search</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #searchInput {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #searchButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #animeResults {
+      margin-top: 20px;
+    }
+
+    .anime-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 15px;
+      text-align: left;
+    }
+
+    .anime-card h2 {
+      margin: 0 0 10px;
+    }
+
+    .anime-card p {
+      margin: 5px 0;
+    }
+
+    .anime-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <h1>Anime Search</h1>
+      <div class="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          autocomplete="off"
+          placeholder="Enter anime name..."
+        />
+        <button id="searchButton">Search</button>
+      </div>
+      <div id="animeResults"></div>
+    </div>
+  </body>
+  <script>
+    document
+      .getElementById("searchButton")
+      .addEventListener("click", async () => {
+        const searchInput = document.getElementById("searchInput").value;
+        const url = `https://anime-db.p.rapidapi.com/anime?page=1&size=10&search=${encodeURIComponent(
+          searchInput
+        )}&sortBy=ranking&sortOrder=asc`;
+        const options = {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key":
+              "b6e720ba2bmsh76d33c150b57096p1f52b0jsn747d76de4211",
+            "x-rapidapi-host": "anime-db.p.rapidapi.com",
+          },
+        };
+
+        try {
+          const response = await fetch(url, options);
+          const data = await response.json();
+          displayResults(data.data);
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+    function displayResults(animes) {
+      const animeResults = document.getElementById("animeResults");
+      animeResults.innerHTML = "";
+
+      animes.forEach((anime) => {
+        const animeCard = document.createElement("div");
+        animeCard.classList.add("anime-card");
+
+        animeCard.innerHTML = `
+            <h2>${anime.title}</h2>
+            <img src="${anime.image}" alt="${anime.title}">
+            <p><strong>Genre:</strong> ${anime.genres.join(", ")}</p>
+            <p><strong>Description:</strong> ${anime.synopsis}</p>
+            <p><strong>Episodes:</strong> ${anime.episodes}</p>
+            <p><strong>Ranking:</strong> ${anime.ranking}</p>
+        `;
+
+        animeResults.appendChild(animeCard);
+      });
+    }
+  </script>
+</html>
